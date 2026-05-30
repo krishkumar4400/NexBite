@@ -103,16 +103,25 @@ const loginUser = async function (req, res) {
 };
 
 const getUserData = async function (req, res) {
-  if(!req.user) {
+  if (!req.user) {
     return res.status(401).json({
       message: "Unauthorized access",
-      success: false 
+      success: false,
     });
   }
   return res.status(200).json({
     user: req.user,
-    success: true
+    success: true,
   });
 };
 
-export { registerUser, loginUser, getUserData };
+const logoutUser = async function (req, res) {
+  const { token } = req.cookies;
+  await blackListTokenModel.create({ token });
+  return res.clearCookie("token").status(200).json({
+    message: "You are logged out",
+    success: true,
+  });
+};
+
+export { registerUser, loginUser, getUserData, logoutUser };

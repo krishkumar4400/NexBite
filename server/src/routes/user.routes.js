@@ -1,50 +1,24 @@
 import { Router } from "express";
-import { getUserData, loginUser, registerUser } from "../controllers/user.controllers.js";
+import {
+  getUserData,
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "../controllers/user.controllers.js";
 import { body } from "express-validator";
 import { authMiddleware } from "../middlewares/auth.middlewares.js";
+import {
+  loginRequestValidator,
+  registerRequestValidator,
+} from "../validations/request.validations.js";
 
 const userRouter = Router();
 
-userRouter.post(
-  "/register",
-  [
-    body("username")
-      .notEmpty()
-      .withMessage("Username is required")
-      .isLength({ min: 3 })
-      .withMessage("Username must be atleast 3 characters long"),
-    body("email")
-      .notEmpty()
-      .withMessage("Email is required")
-      .isLength({ min: 6 })
-      .withMessage("Email is not valid"),
-    body("password")
-      .notEmpty()
-      .withMessage("Password is required")
-      .isLength({ min: 6 })
-      .withMessage("Password must be atleast 6 characters long"),
-    body("role").optional().isString().withMessage("role should be in string"),
-  ],
-  registerUser,
-);
+userRouter.post("/register", registerRequestValidator, registerUser);
 
-userRouter.post(
-  "/login",
-  [
-    body("email")
-      .notEmpty()
-      .withMessage("Email is required")
-      .isEmail()
-      .withMessage("Email is not valid"),
-    body("password")
-      .notEmpty()
-      .withMessage("Password is required")
-      .isLength({ min: 6 })
-      .withMessage("Password must be atleast 6 characters long"),
-  ],
-  loginUser,
-);
+userRouter.post("/login", loginRequestValidator, loginUser);
 
-userRouter.get('/profile', authMiddleware, getUserData);
+userRouter.get("/profile", authMiddleware, getUserData);
+userRouter.post("/logout", authMiddleware, logoutUser);
 
 export default userRouter;
