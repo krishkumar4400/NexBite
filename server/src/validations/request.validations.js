@@ -1,6 +1,5 @@
 import { body } from "express-validator";
 
-
 export const registerRequestValidator = [
   body("username")
     .notEmpty()

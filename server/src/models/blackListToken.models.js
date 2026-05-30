@@ -1,20 +1,25 @@
 import mongoose, { Schema } from "mongoose";
 
-const blackListTokenSchema = new Schema({
+const blackListTokenSchema = new Schema(
+  {
     token: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
+      unique: true,
     },
     createdAt: {
-        type: Date,
-        default: Date.now,
-        expires: '24h'
-    }
-}, {
-    timestamps: true
-});
+      type: Date,
+      default: Date.now,
+      expires: 86400,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
 const blackListTokenModel =
-  mongoose.model.BlackListedToken || mongoose.model("BlackListedToken", blackListTokenSchema);
+  mongoose.model.BlackListedToken ||
+  mongoose.model("BlackListedToken", blackListTokenSchema);
 
 export default blackListTokenModel;

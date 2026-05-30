@@ -1,3 +1,4 @@
+import blackListTokenModel from "../models/blackListToken.models.js";
 import userModel from "../models/User.models.js";
 import { validationResult } from "express-validator";
 
