@@ -1,11 +1,18 @@
 import mongoose, { model, Schema } from "mongoose";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
   {
     avatar: {
-      url: { type: String, localPath: String },
-      default: "",
-      localPath: "",
+      type: {
+        url: String,
+        localPath: String,
+      },
+      default: {
+        url: `https://placehold.co/400x400`,
+        localPath: "",
+      },
     },
     fullname: {
       type: String,
@@ -30,6 +37,7 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
+      select: false,
     },
     isEmailVerified: {
       type: Boolean,
@@ -57,6 +65,20 @@ const userSchema = new Schema(
     timestamps: true,
   },
 );
+
+userSchema.methods.generateAuthToken = async function () {
+  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "24h",
+  });
+};
+
+userSchema.statics.hashPassword = async function (password) {
+  return await bcrypt.hash(password, 10);
+};
+
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 const userModel = model.User || model("User", userSchema);
 
